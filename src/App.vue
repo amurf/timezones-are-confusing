@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       darkMode: true,
-      dateString: '18th april 07 PM utc',
+      dateString: '',
       userTimezone: moment.tz.guess(),
       dateFormat: 'dddd, MMMM Do hh:mm a',
     };
