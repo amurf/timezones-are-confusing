@@ -2,8 +2,8 @@
   <div id="app" class="bg-gray-800">
 
     <div class='center'>
-      <input v-model.lazy="dateString" placeholder="Date"
-                                       class="shadow appearance-none border rounded py-2 px-3 text-2xl leading-tight focus:outline-none focus:shadow-outline">
+      <input v-model.lazy="dateString" placeholder="22nd March 2023 4pm"
+                                       class="shadow appearance-none border rounded w-1/3 py-2 px-3 text-2xl leading-tight focus:outline-none focus:shadow-outline">
 
       <div class='text-purple-300 text-2xl' v-if="hasDate">
         <p>That date is {{ parsedDate.format(dateFormat) }} for you, which is {{ parsedDate.fromNow() }}</p>
