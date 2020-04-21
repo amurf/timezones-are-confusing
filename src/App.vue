@@ -2,15 +2,15 @@
   <div id="app" class="bg-gray-800">
 
     <div class='center'>
-      <input v-model.lazy="dateString" placeholder="Date" 
+      <input v-model.lazy="dateString" placeholder="Date"
                                        class="shadow appearance-none border rounded py-2 px-3 text-2xl leading-tight focus:outline-none focus:shadow-outline">
 
-      <div class='text-purple-300 bold text-2xl'>
-        <p>That date is <span class='font-bold'>{{ parsedDate.format(dateFormat) }}</span> for you, which is {{ parsedDate.fromNow() }}</p>
+      <div class='text-purple-300 text-2xl' v-if="hasDate">
+        <p>That date is {{ parsedDate.format(dateFormat) }} for you, which is {{ parsedDate.fromNow() }}</p>
       </div>
 
       <div class='text-sm mt-2'>
-        <p>Converted from {{ convertedDate.format(dateFormat + ' z') }}</p>
+        <p v-if="hasDate">Converted from {{ convertedDate.format(dateFormat + ' z') }}</p>
         <p>Your timezone is detected as {{ userTimezone }}</p>
       </div>
     </div>
@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     convertedDate() {
-      return this.parsedDate.tz(this.parsedDateObj[0].start.get('timezone'));
+      return this.parsedDate.tz(this.parsedDateObj[0].start.get('timezone') || this.userTimezone);
     },
     parsedDateObj() {
       return custom.parse(this.dateString);
@@ -47,11 +47,16 @@ export default {
     parsedDate() {
       return moment(this.parsedDateObj[0].start.date());
     },
+
+    hasDate() {
+      return this.dateString.length && this.parsedDate.isValid();
+    },
   },
   methods: {
     setBackground() {
       console.log("make it black");
     },
+
   },
   created() {
     this.setBackground();
