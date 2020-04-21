@@ -22,10 +22,12 @@
 import chrono from 'chrono-node';
 import moment from 'moment-timezone';
 
-import TimezoneRefiner from './chrono-refiner-timezone';
+import TimezoneAbbrRefiner from './chrono-refiner-timezone-abbr';
+import CityRefiner from './chrono-refiner-timezone-city';
 
 var custom = new chrono.Chrono();
-custom.refiners.push(TimezoneRefiner);
+custom.refiners.push(TimezoneAbbrRefiner);
+custom.refiners.push(CityRefiner);
 
 export default {
   name: 'App',
@@ -39,7 +41,8 @@ export default {
   },
   computed: {
     convertedDate() {
-      return this.parsedDate.tz(this.parsedDateObj[0].start.get('timezone') || this.userTimezone);
+      let dateObj = this.parsedDateObj[0].start;
+      return this.parsedDate.tz(dateObj.get('timezone') || dateObj.get('timezoneAbbr') || this.userTimezone);
     },
     parsedDateObj() {
       return custom.parse(this.dateString);
