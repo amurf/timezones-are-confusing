@@ -36,10 +36,10 @@ export default {
       return new Date(Date.parse(this.response.utc_date));
     },
     convertedDate() {
-      return this.date.toLocaleString("en-US", { timeZone: this.response.timezone });
+      return this.date.toLocaleString("en-US", { timeZone: this.response.timezone, dateStyle: "full", timeStyle: "medium" });
     },
     userDate() {
-      return this.date.toLocaleString("en-US", { timeZone: this.userTimezone });
+      return this.date.toLocaleString("en-US", { timeZone: this.userTimezone, dateStyle: "full", timeStyle: "medium" });
     },
     hasDate() {
       return this.dateString.length && this.response.valid;
