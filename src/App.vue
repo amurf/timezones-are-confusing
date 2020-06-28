@@ -2,15 +2,16 @@
   <div id="app" class="bg-gray-800">
 
     <div class='center'>
-      <input v-model.lazy="dateString" placeholder="22nd March 2023 4pm"
+
+      <input @blur="checkString()" v-model.lazy="dateString" placeholder="22nd March 2023 4pm"
                                        class="shadow appearance-none border rounded w-1/3 py-2 px-3 text-2xl leading-tight focus:outline-none focus:shadow-outline">
 
       <div class='text-purple-300 text-2xl' v-if="hasDate">
-        <p>That date is {{ parsedDate.format(dateFormat) }} for you, which is {{ parsedDate.fromNow() }}</p>
+        <p>That date is {{ userDate }} for you, which is {{ response.from_now }}</p>
       </div>
 
       <div class='text-sm mt-2'>
-        <p v-if="hasDate">Converted from {{ convertedDate.format(dateFormat + ' z') }}</p>
+        <p v-if="hasDate">Converted from {{ convertedDate }} {{ response.timezone }}</p>
         <p>Your timezone is detected as {{ userTimezone }}</p>
       </div>
     </div>
@@ -19,40 +20,29 @@
 </template>
 
 <script>
-import chrono from 'chrono-node';
-import moment from 'moment-timezone';
-
-import TimezoneAbbrRefiner from './chrono-refiner-timezone-abbr';
-import CityRefiner from './chrono-refiner-timezone-city';
-
-var custom = new chrono.Chrono();
-custom.refiners.push(TimezoneAbbrRefiner);
-custom.refiners.push(CityRefiner);
-
 export default {
   name: 'App',
   data() {
     return {
       darkMode: true,
       dateString: '',
-      userTimezone: moment.tz.guess(),
-      dateFormat: 'dddd, MMMM Do hh:mm a',
+      response: {},
+      userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      dateFormat: 'dddd, MMMM d hh:mm a',
     };
   },
   computed: {
+    date() {
+      return new Date(Date.parse(this.response.utc_date));
+    },
     convertedDate() {
-      let dateObj = this.parsedDateObj[0].start;
-      return this.parsedDate.tz(dateObj.get('timezone') || dateObj.get('timezoneAbbr') || this.userTimezone);
+      return this.date.toLocaleString("en-US", { timeZone: this.response.timezone });
     },
-    parsedDateObj() {
-      return custom.parse(this.dateString);
+    userDate() {
+      return this.date.toLocaleString("en-US", { timeZone: this.userTimezone });
     },
-    parsedDate() {
-      return moment(this.parsedDateObj[0].start.date());
-    },
-
     hasDate() {
-      return this.dateString.length && this.parsedDate.isValid();
+      return this.dateString.length && this.response.valid;
     },
   },
   methods: {
@@ -60,8 +50,16 @@ export default {
       console.log("make it black");
     },
 
+    async checkString() {
+      let response = await fetch('https://timezone-api.herokuapp.com/?date=' + this.dateString + "&tz=" + this.userTimezone);
+      let dateJson = await response.json();
+
+      this.response = dateJson;
+    },
+
   },
-  created() {
+  async created() {
+
     this.setBackground();
   },
 }
