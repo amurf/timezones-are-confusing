@@ -46,10 +46,6 @@ export default {
     },
   },
   methods: {
-    setBackground() {
-      console.log("make it black");
-    },
-
     async checkString() {
       let response = await fetch('https://timezone-api.herokuapp.com/?date=' + this.dateString + "&tz=" + this.userTimezone);
       let dateJson = await response.json();
@@ -57,10 +53,6 @@ export default {
       this.response = dateJson;
     },
 
-  },
-  async created() {
-
-    this.setBackground();
   },
 }
 </script>
